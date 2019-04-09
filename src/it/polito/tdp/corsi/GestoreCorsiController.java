@@ -12,9 +12,11 @@ import it.polito.tdp.corsi.model.Corso;
 import it.polito.tdp.corsi.model.GestoreCorsi;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 
 public class GestoreCorsiController {
 
@@ -40,31 +42,36 @@ public class GestoreCorsiController {
 
     @FXML
     void doCalcolaStatCorsi(ActionEvent event) {
-    	
+    	String pd=txtPeriodo.getText();
+    	if(pd != null && !pd.isEmpty()) {
+    		if(GestoreCorsi.isDigit(pd)) {
+    			String numeroIscritti=model.getNumIScrittibyPeriodo(pd);
+    			txtResult.setText(numeroIscritti);
+    		}else showAlert("Inserisci periodo didattico: 1 o 2 ");
+    	}else  showAlert("campo non valido: inserisci 1 o 2 ");
     }
 
     @FXML
     void doCercaCorsi(ActionEvent event) {
-    	int periodo;
-    	try {
-    		periodo = Integer.parseInt(txtPeriodo.getText());
-    	} catch (NumberFormatException e) {
-    		txtResult.appendText("Devi inserire un periodo (1 o 2)");
-    		return;
-    	}
-    	if(periodo != 1 && periodo != 2) {
-    		txtResult.appendText("Devi inserire un periodo (1 o 2)");
-    		return;
-    	}
     	
-    	List<Corso> corsi = this.model.getCorsiByPeriodo(periodo);
-    	for(Corso c : corsi) {
-    		txtResult.appendText(c.toString() + "\n");
-    	}
+    	String pd=txtPeriodo.getText();
+    	if(pd != null && !pd.isEmpty()) {
+    		if(GestoreCorsi.isDigit(pd)) {
+    			String elencoCorsi=model.getCorsiByPeriodo(pd);
+    			txtResult.setText(elencoCorsi);
+    		}else showAlert("Inserisci periodo didattico: 1 o 2 ");
+    	}else showAlert("campo non valido: inserisci 1 o 2 ");
     	
     }
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
+    private void showAlert(String message) {
+    	Alert alert = new Alert(AlertType.ERROR);
+		alert.setContentText(message);
+		alert.show();
+		
+	}
+
+	@FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";
         assert txtPeriodo != null : "fx:id=\"txtPeriodo\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";

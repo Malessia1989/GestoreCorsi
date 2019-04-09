@@ -11,60 +11,57 @@ import it.polito.tdp.corsi.model.Corso;
 
 public class CorsoDAO {
 
-	public List<Corso> listAll() {
-		String sql = "SELECT * FROM corso";
-		List<Corso> result = new LinkedList<Corso>();
+	public List<Corso> listCorsiByPD(int periodo) {
+		final String sql= " select * " + 
+				"from corso " + 
+				"where pd= ? ";
+		
+		List<Corso> corsi= new LinkedList<Corso>();
 		
 		try {
-			Connection conn = ConnectDB.getConnection();
-			PreparedStatement st = conn.prepareStatement(sql);
-		
-			ResultSet rs = st.executeQuery();
+			Connection conn= ConnectDB.getConnection();
+			PreparedStatement st=conn.prepareStatement(sql);
+			st.setInt(1, periodo);
+			
+			ResultSet rs=st.executeQuery();
 			
 			while(rs.next()) {
-				Corso c = new Corso(rs.getString("codins"),
-						rs.getInt("crediti"),
-						rs.getString("nome"),
-						rs.getInt("pd"));
-				
-				result.add(c);
+				Corso c= new Corso(rs.getString("codins"),rs.getInt("crediti"),rs.getString("nome"), rs.getInt("pd"));
+				corsi.add(c);
 			}
-			
 			conn.close();
-			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	
-		return result;
+		return corsi;
 	}
 
-	public List<Corso> listCorsiByPD(int periodo) {
-		String sql = "SELECT * FROM corso WHERE pd = ?";
-		List<Corso> result = new LinkedList<Corso>();
+	public String IscrittibyPd(int periodo) {
 		
+		final String sql="select COUNT(matricola) " + 
+				"from corso as c,iscrizione as i " + 
+				"where c.codins=i.codins and pd=? ";
+		
+		int iscritti=0;
 		try {
-			Connection conn = ConnectDB.getConnection();
-			PreparedStatement st = conn.prepareStatement(sql);
+			Connection conn= ConnectDB.getConnection();
+			PreparedStatement st=conn.prepareStatement(sql);
 			st.setInt(1, periodo);
-			ResultSet rs = st.executeQuery();
+			
+			ResultSet rs=st.executeQuery();
 			
 			while(rs.next()) {
-				Corso c = new Corso(rs.getString("codins"),
-						rs.getInt("crediti"),
-						rs.getString("nome"),
-						rs.getInt("pd"));
-				
-				result.add(c);
+				iscritti =
 			}
-			
 			conn.close();
-			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	
-		return result;
+		return corsi;
+		
+		return null;
 	}
+
+
 
 }
